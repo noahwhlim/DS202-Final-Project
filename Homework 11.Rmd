@@ -13,9 +13,9 @@ https://www.kaggle.com/datasets/harikrishnareddyb/used-car-price-predictions
 The data set covers the location, age, and price of different models of cars for sale on the market. 
 
 ```{r}
-df = read.csv("car_listings.csv")
-View(head(df))
+df = read.csv("true_car_listings.csv")
 View(df)
 ```
 
 # Cleaning steps
+There are a few columns that will most likely not be needed for our data analysis. One of these columns is the "VIN" column which is the vehicle's unique identification number. 
