@@ -1,0 +1,21 @@
+---
+title: "Homework 11"
+author: "Wei Hern Lim"
+output: html_document
+--- 
+
+# Group members  
+Michael Mila
+Wei Hern Lim
+
+# Data set
+https://www.kaggle.com/datasets/harikrishnareddyb/used-car-price-predictions  
+The data set covers the location, age, and price of different models of cars for sale on the market. 
+
+```{r}
+df = read.csv("car_listings.csv")
+View(head(df))
+View(df)
+```
+
+# Cleaning steps
