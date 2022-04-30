@@ -18,4 +18,4 @@ View(df)
 ```
 
 # Cleaning steps
-There are a few columns that will most likely not be needed for our data analysis. One of these columns is the "VIN" column which is the vehicle's unique identification number. 
+There are a few columns that will most likely not be needed for our data analysis. One of these columns is the "VIN" column which is the vehicle's unique identification number. We will also combine columns to consider if things like geographical region affects the the price of used cars. 
