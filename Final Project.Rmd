@@ -1,0 +1,22 @@
+---
+title: "Final Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+df = read.csv("true_car_listings.csv")
+View(df)
+nrow(df)
+ggplot(data =  df, aes(x=Year, y=Price)) +
+  geom_point()
+
+View(df$State)
+```
+
+
