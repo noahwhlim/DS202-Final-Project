@@ -13,9 +13,12 @@ https://www.kaggle.com/datasets/harikrishnareddyb/used-car-price-predictions
 The data set covers the location, age, and price of different models of cars for sale on the market. 
 
 ```{r}
-df = read.csv("true_car_listings.csv")
+df = read.csv("car_listings.csv")
+View(head(df))
 View(df)
 ```
 
 # Cleaning steps
 There are a few columns that will most likely not be needed for our data analysis. One of these columns is the "VIN" column which is the vehicle's unique identification number. We will also combine columns to consider if things like geographical region affects the the price of used cars. 
+
+We can also create more data by extrapolating from current data. We can separate the determine whether the car was new or used by looking at the mileage. A mileage below 100 would be a good indicator that it is new and is being sold by a dealer.
