@@ -13,10 +13,11 @@ library(ggplot2)
 df = read.csv("true_car_listings.csv")
 View(df)
 nrow(df)
-ggplot(data =  df, aes(x=Year, y=Price)) +
-  geom_point()
+#ggplot(data =  df, aes(x=Year, y=Price)) +
+# geom_point()
 
-View(df$State)
+#Dropping vin column - we do not need it for our analysis
+df = df %>% select(-Vin)
 ```
 
 

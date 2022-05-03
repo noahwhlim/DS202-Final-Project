@@ -1,0 +1,14 @@
+---
+title: "Worklog"
+author: "Michael Mila"
+date: "5/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 5/2/2022 - Michael Mila
+
+- Removed vim column from data.
