@@ -12,3 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # 5/2/2022 - Michael Mila
 
 - Removed vim column from data.
+
+# 5/4/2022 - Michael Mila
+
+- Did more data preparation and began data exploration

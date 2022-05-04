@@ -1,0 +1,86 @@
+---
+title: "Final Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+
+## Data Cleaning
+```{r}
+
+#The data set covers the location, age, and price of different models of cars for sale on the market. Our main investigation is determining what type of features determine a used car's price.
+
+cars = read.csv("true_car_listings.csv")
+
+#Dropping vin column - we do not need it for our analysis
+cars = cars %>% select(-Vin)
+
+#Let's also convert the Make and State variable into factors from characters
+str(cars)
+cars$Make = as.factor(cars$Make)
+cars$State = as.factor(cars$State)
+
+# Checking the levels the new factor variables
+levels(cars$Make)
+levels(cars$State)
+```
+
+It appears that the levels are correct for Make, but there are some duplicates for state. We need to fix the levels for state.
+
+```{r}
+
+# change back to character
+cars$State = as.character(cars$State)
+cars$State = toupper(cars$State)
+
+# change back to factor
+cars$State = as.factor(cars$State)
+levels(cars$State)
+```
+
+## Data Exploration
+
+```{r}
+# First, let's take a look at the distribution of the car's prices.
+summary(cars$Price)
+
+cars %>% ggplot(aes(x = Price)) + 
+  geom_boxplot() +
+  coord_flip()
+```
+
+It looks like most of the cars are in the range of 18500 - 26995. However, there are many cars that are above this range.
+
+A common factor when determining car price is the mileage of the car. From experience, typically a car with less than 100,000 has more value than a car that has more than 100,000 miles. Let's see if this data set holds true.
+
+```{r}
+cars %>% ggplot(aes(x = Mileage, y = Price)) + geom_point()
+```
+
+```{r}
+cars.over.500000 = cars %>% filter(Mileage > 500000)
+cars.over.500000
+```
+
+After looking at the data, it appears that there are some cars with over 500000 miles and multiple cars with exactly 999999 miles. To make our data and visualizations cleaner, we will be treating cars with over 500000 as outliers and we will remove it from our data set.
+
+```{r}
+cars2 = cars %>% filter(Mileage < 500000)
+```
+
+
+Let's take a look at how the car's year affects the pricing. Newer cars will most likely be  more expensive than older cars. The first thing we should see what years were the cars in our data made.
+
+```{r}
+cars.by.year.make = cars2 %>% group_by(Year, Make) %>% summarise(n = n())
+cars.by.year.make %>% ggplot(aes(x = Year, fill = Make)) + 
+  geom_bar(aes(weight = n)) + 
+  ylab("Number of Cars") + 
+  ggtitle("Number of Cars by Year and Make")
+```
+
+It appears that most of our cars are from between 2014 - 2017.
