@@ -23,10 +23,12 @@ cars = cars %>% select(-Vin)
 str(cars)
 cars$Make = as.factor(cars$Make)
 cars$State = as.factor(cars$State)
+cars$Year = as.factor(cars$Year)
 
 # Checking the levels the new factor variables
 levels(cars$Make)
 levels(cars$State)
+levels(cars$Year)
 ```
 
 It appears that the levels are correct for Make, but there are some duplicates for state. We need to fix the levels for state.
@@ -83,4 +85,21 @@ cars.by.year.make %>% ggplot(aes(x = Year, fill = Make)) +
   ggtitle("Number of Cars by Year and Make")
 ```
 
-It appears that most of our cars are from between 2014 - 2017.
+It appears that most of our cars are from between 2014 - 2017. It is a little hard to tell how many cars there are by make in the graph above, so let's try to make that better.
+
+```{r}
+
+# Might delete later
+
+cars.by.make.model = cars2 %>% select(Year, Make, Model)
+cars.by.make.model %>% ggplot(aes(x = Make)) + 
+  geom_histogram(stat = "count") +
+  facet_wrap(~Year)
+```
+
+```{r}
+cars2 %>% ggplot(aes(x = Year, y = Price)) + 
+  geom_boxplot()
+```
+
+It appears that the more newer cars have higher prices. 
