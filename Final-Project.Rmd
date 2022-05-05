@@ -52,10 +52,11 @@ summary(cars$Price)
 
 cars %>% ggplot(aes(x = Price)) + 
   geom_boxplot() +
-  coord_flip()
+  coord_flip() + 
+  ggtitle("Price distribution of the Cars")
 ```
 
-It looks like most of the cars are in the range of 18500 - 26995. However, there are many cars that are above this range.
+It looks like 50% of the cars are in the range of 18500 - 26995. However, there are many cars that are above this range.
 
 A common factor when determining car price is the mileage of the car. From experience, typically a car with less than 100,000 has more value than a car that has more than 100,000 miles. Let's see if this data set holds true.
 
@@ -89,12 +90,40 @@ It appears that most of our cars are from between 2014 - 2017. It is a little ha
 
 ```{r}
 
-# Might delete later
-
 cars.by.make.model = cars2 %>% select(Year, Make, Model)
-cars.by.make.model %>% ggplot(aes(x = Make)) + 
+cars.by.make.model %>% ggplot(aes(x = Year)) + 
   geom_histogram(stat = "count") +
-  facet_wrap(~Year)
+  facet_wrap(~Make)
+```
+
+From looking at the graphs, it looks like Ford, Chevrolet, Honda, Nissan, and Toyota are the most common cars in our data. Let's investigate further.
+
+```{r}
+cars.by.make.model.top = cars2 %>% group_by(Make) %>% 
+  summarise(n = n()) %>% 
+  arrange(desc(n))
+
+#Take the top 5 makes
+cars.by.make.model.top5 = cars.by.make.model.top %>% slice(1:5)
+cars.by.make.model.top5
+
+cars.by.make.model.top5 %>% ggplot(aes(x = Make)) + geom_histogram(aes(weight = n), stat = "count", fill = "lightblue")
+```
+
+The top 5 cars by count are Ford, Chevrolet, Toyota, Nissan, and Honda.
+
+```{r}
+# Join the original data back so that we can look at pricing
+cars.by.make.model.top5.join = cars.by.make.model.top5 %>% left_join(cars2, by = "Make")
+
+cars.by.make.model.top5.join %>% ggplot(aes(x = Year, y = Price, group = Make, col = Make)) + geom_line() + facet_grid(~Make)
+```
+
+It looks like the most expensive type of car is a Ford. Nissan and Honda have similar price ranges, and I would say they have a slightly lower price than the other cars, especially for newer cars. 
+
+```{r}
+cars.by.make.model.top5.join %>% ggplot(aes(x = Mileage, y = Price, color = Make)) +
+  geom_point()
 ```
 
 ```{r}
@@ -102,4 +131,15 @@ cars2 %>% ggplot(aes(x = Year, y = Price)) +
   geom_boxplot()
 ```
 
-It appears that the more newer cars have higher prices. 
+It appears that newer cars have higher prices for all types of cars. Now we should really look at if cars are worth more if they have less than 100000 miles. We will use the median to determine if a car is "cheap". If it is less than the median is is considered cheap, else it is not cheap.
+
+```{r}
+library(ggmosaic)
+cars.less.than.100000 = cars2 %>% mutate(LessThanMileage = (Mileage < 100000), Cheap = (Price <= 18500))
+
+ggplot(data = cars.less.than.100000) + 
+  geom_mosaic(aes(x = product(Cheap, LessThanMileage), fill = Cheap)) + 
+  labs(x = "Mileage less than 100,000", y = "Car price is less than 18500", title = "Does Lower Mileage Make a Car Cheaper")
+```
+
+It appears that most of the cars in the data have less than 100,000 miles on them. About half of the cars that have less than 100,000 miles are at the median price or lower. Looking at the cars that have over 100,000 miles, it is clear that a larger amount of cars are being sold at a price that we are considering as cheap. Based on this plot, there is evidence that supports the idea that having less mileage on a car will make the price value higher.
