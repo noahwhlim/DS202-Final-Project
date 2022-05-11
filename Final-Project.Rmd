@@ -11,20 +11,15 @@ library(ggplot2)
 
 ## Data Cleaning
 ```{r}
-
 #The data set covers the location, age, and price of different models of cars for sale on the market. Our main investigation is determining what type of features determine a used car's price.
-
 cars = read.csv("true_car_listings.csv")
-
 #Dropping vin column - we do not need it for our analysis
 cars = cars %>% select(-Vin)
-
 #Let's also convert the Make and State variable into factors from characters
 str(cars)
 cars$Make = as.factor(cars$Make)
 cars$State = as.factor(cars$State)
 cars$Year = as.factor(cars$Year)
-
 # Checking the levels the new factor variables
 levels(cars$Make)
 levels(cars$State)
@@ -34,11 +29,9 @@ levels(cars$Year)
 It appears that the levels are correct for Make, but there are some duplicates for state. We need to fix the levels for state.
 
 ```{r}
-
 # change back to character
 cars$State = as.character(cars$State)
 cars$State = toupper(cars$State)
-
 # change back to factor
 cars$State = as.factor(cars$State)
 levels(cars$State)
@@ -49,14 +42,13 @@ levels(cars$State)
 ```{r}
 # First, let's take a look at the distribution of the car's prices.
 summary(cars$Price)
-
 cars %>% ggplot(aes(x = Price)) + 
   geom_boxplot() +
   coord_flip() + 
   ggtitle("Price distribution of the Cars")
 ```
 
-It looks like 50% of the cars are in the range of 18500 - 26995. However, there are many cars that are above this range.
+It looks like 50% of the cars are in the range of 18500 - 26995. However, there are many cars that are above this range. Our median is still well at the bottom of the chart meaning even though there's a lot of outliers above the 3rd quartile, it is only a minority that exist above the box.
 
 A common factor when determining car price is the mileage of the car. From experience, typically a car with less than 100,000 has more value than a car that has more than 100,000 miles. Let's see if this data set holds true.
 
@@ -86,10 +78,9 @@ cars.by.year.make %>% ggplot(aes(x = Year, fill = Make)) +
   ggtitle("Number of Cars by Year and Make")
 ```
 
-It appears that most of our cars are from between 2014 - 2017. It is a little hard to tell how many cars there are by make in the graph above, so let's try to make that better.
+It appears that most of our cars are from between 2014 - 2017. It is a little hard to tell how many cars there are by make in the graph above, so let's try to make that better. However, we can tell that there is a larger chunk of green than any other color.
 
 ```{r}
-
 cars.by.make.model = cars2 %>% select(Year, Make, Model)
 cars.by.make.model %>% ggplot(aes(x = Year)) + 
   geom_histogram(stat = "count") +
@@ -102,24 +93,21 @@ From looking at the graphs, it looks like Ford, Chevrolet, Honda, Nissan, and To
 cars.by.make.model.top = cars2 %>% group_by(Make) %>% 
   summarise(n = n()) %>% 
   arrange(desc(n))
-
 #Take the top 5 makes
 cars.by.make.model.top5 = cars.by.make.model.top %>% slice(1:5)
 cars.by.make.model.top5
-
 cars.by.make.model.top5 %>% ggplot(aes(x = Make)) + geom_histogram(aes(weight = n), stat = "count", fill = "lightblue")
 ```
 
-The top 5 cars by count are Ford, Chevrolet, Toyota, Nissan, and Honda.
+The top 5 cars by count are Ford, Chevrolet, Toyota, Nissan, and Honda with Ford and Chevrolet dominating the rest.
 
 ```{r}
 # Join the original data back so that we can look at pricing
 cars.by.make.model.top5.join = cars.by.make.model.top5 %>% left_join(cars2, by = "Make")
-
 cars.by.make.model.top5.join %>% ggplot(aes(x = Year, y = Price, group = Make, col = Make)) + geom_line() + facet_grid(~Make)
 ```
 
-It looks like the most expensive type of car is a Ford. Nissan and Honda have similar price ranges, and I would say they have a slightly lower price than the other cars, especially for newer cars. 
+It looks like the most expensive type of car is a Ford. Nissan and Honda have similar price ranges, and I would say they have a slightly lower price than the other cars, especially for newer cars. Nissan has the lowest average prices for new cars made in the last few years, both Honda and Toyota had a price spike in the past few years which would bring the average up.
 
 ```{r}
 cars.by.make.model.top5.join %>% ggplot(aes(x = Mileage, y = Price, color = Make)) +
@@ -136,10 +124,9 @@ It appears that newer cars have higher prices for all types of cars. Now we shou
 ```{r}
 library(ggmosaic)
 cars.less.than.100000 = cars2 %>% mutate(LessThanMileage = (Mileage < 100000), Cheap = (Price <= 18500))
-
 ggplot(data = cars.less.than.100000) + 
   geom_mosaic(aes(x = product(Cheap, LessThanMileage), fill = Cheap)) + 
   labs(x = "Mileage less than 100,000", y = "Car price is less than 18500", title = "Does Lower Mileage Make a Car Cheaper")
 ```
 
-It appears that most of the cars in the data have less than 100,000 miles on them. About half of the cars that have less than 100,000 miles are at the median price or lower. Looking at the cars that have over 100,000 miles, it is clear that a larger amount of cars are being sold at a price that we are considering as cheap. Based on this plot, there is evidence that supports the idea that having less mileage on a car will make the price value higher.
+It appears that most of the cars in the data have less than 100,000 miles on them. About half of the cars that have less than 100,000 miles are at the median price or lower. Looking at the cars that have over 100,000 miles, it is clear that a larger amount of cars are being sold at a price that we are considering as cheap, meaning below the median price. Based on this plot, there is evidence that supports the idea that having mileage less than 100,000 on a car will make the car have a higher chance to be priced above the median price.
